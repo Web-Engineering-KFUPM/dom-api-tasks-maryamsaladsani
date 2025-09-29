@@ -19,9 +19,13 @@ inside the <p> element with id="t1-msg".
 💡 Hint:
 document.getElementById("t1-msg").innerHTML = "Hello, World!";
 */
- 
+document.addEventListener("DOMContentLoaded", () => {
+    const msg = document.getElementById("t1-msg");
+    msg.textContent = "Hello, World!";
+});
 
-/*  
+/*
+
 =======================================
 TODO2: Interaction Corner
 ---------------------------------------
@@ -40,8 +44,16 @@ button.addEventListener("click", function () {
     // change text here
 });
 */
- 
+document.addEventListener("DOMContentLoaded", () => {
+    // get elements
+    const btn = document.getElementById("t2-btn");
+    const status = document.getElementById("t2-status");
 
+    // attach event listener
+    btn.addEventListener("click", function () {
+        status.textContent = "You clicked the button!";
+    });
+});
 /*  
 =======================================
 TODO3: Inspiring Quote Board
@@ -65,10 +77,27 @@ The API returns JSON like:
 }
 
 Use:
-data.content   // the quote text
+data.quote   // the quote text
 data.author    // the author
 */
- 
+document.addEventListener("DOMContentLoaded", () => {
+    const btn = document.getElementById("t3-loadQuote");
+    const quoteEl = document.getElementById("t3-quote");
+    const authorEl = document.getElementById("t3-author");
+
+    btn.addEventListener("click", () => {
+        fetch("https://dummyjson.com/quotes/random")
+            .then(res => res.json())
+            .then(data => {
+                quoteEl.textContent = data.quote;   // quote text
+                authorEl.textContent = data.author; // author
+            })
+            .catch(() => {
+                quoteEl.textContent = "Could not load quote 😢";
+                authorEl.textContent = "";
+            });
+    });
+});
 
 /*  
 =======================================
@@ -94,3 +123,32 @@ data.main.temp      → temperature (°C)
 data.main.humidity  → humidity (%)
 data.wind.speed     → wind speed (m/s)
 */
+document.addEventListener("DOMContentLoaded", () => {
+    const btn = document.getElementById("t4-loadWx");
+    const temp = document.getElementById("t4-temp");
+    const hum  = document.getElementById("t4-hum");
+    const wind = document.getElementById("t4-wind");
+    const err  = document.getElementById("t4-err");
+
+    const API_KEY = "9c29da573838fd8cdd561179419142d7";
+    const url = `https://api.openweathermap.org/data/2.5/weather?q=Dammam&appid=${API_KEY}&units=metric`;
+
+
+    btn.addEventListener("click", () => {
+        fetch(url)
+            .then(res => {
+                if (!res.ok) throw new Error("HTTP " + res.status);
+                return res.json();
+            })
+            .then(data => {
+                temp.textContent = `${Math.round(data.main.temp)} °C`;
+                hum.textContent = `${data.main.humidity} %`;
+                wind.textContent = `${data.wind.speed} m/s`;
+                err.textContent = "";
+            })
+            .catch(() => {
+                temp.textContent = hum.textContent = wind.textContent = "—";
+                err.textContent = "Could not load weather. Check your API key or network.";
+            });
+    });
+});
